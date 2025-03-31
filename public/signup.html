@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Riseon – Sign Up</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="logo-container">
+    <img src="images/riseon-logo.png" alt="Riseon Logo" class="logo" />
+    <h3 class="login-tagline">Built for those who rise.</h3>
+  </div>
+
+  <div class="signup-container">
+    <h2>Sign Up</h2>
+    <form id="signup-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="New Password" required />
+      <input type="password" id="confirm-password" placeholder="Re-enter New Password" required />
+      <input type="text" id="first_name" placeholder="First Name" required />
+      <input type="text" id="last_name" placeholder="Last Name" required />
+      <input type="tel" id="phone" placeholder="Phone Number" required />
+      <input type="number" id="age" placeholder="Age" required />
+      <select id="sex" required>
+        <option value="">Select Sex</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+      <input type="text" id="referral_code" placeholder="Referral Code (optional)" />
+      <div class="captcha-box">
+        <div class="g-recaptcha" data-sitekey="6Lf_nQQrAAAAABiung9bAnhob5q3AnLZCQgnzEFn"></div>
+      </div>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p class="signup">Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    document.getElementById("signup-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      const data = {
+        username: document.getElementById("username").value,
+        password,
+        first_name: document.getElementById("first_name").value,
+        last_name: document.getElementById("last_name").value,
+        phone: document.getElementById("phone").value,
+        sex: document.getElementById("sex").value,
+        age: document.getElementById("age").value,
+        referral_code: document.getElementById("referral_code").value,
+        captcha: grecaptcha.getResponse()
+      };
+
+      const response = await fetch("/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      if (result.message) {
+        alert(result.message);
+        window.location.href = "login.html";
+      } else {
+        alert(result.error || "Signup failed.");
+      }
+    });
+  </script>
+</body>
+</html>

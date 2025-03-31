@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Riseon – Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- HEADER -->
+        <header class="dashboard-header">
+            <img src="images/riseon-logo.png" class="header-logo" alt="Riseon Logo">
+            <h1 class="welcome-text">Welcome to Riseon</h1>
+            <div class="tagline-wrapper">
+                <div class="animated-tagline">
+                  <span>Built for those who rise.</span>
+                  <span>Built for those who rise.</span>
+                  <span>Built for those who rise.</span>
+                  <span>Built for those who rise.</span>
+                </div>
+              </div>
+              
+        </header>
+
+        <!-- GREETING -->
+        <section class="user-info">
+            <h2>Hello, <span id="user-name">User</span> 👋</h2>
+        </section>
+
+        <!-- REFERRAL STATS -->
+        <section class="referral-stats">
+            <h3>Your Referral Stats</h3>
+            <p><strong>Referred Users:</strong> <span id="referral-count">0</span></p>
+        </section>
+
+        <!-- REFERRAL CODE -->
+        <section class="referral-code">
+            <h3>Your Referral Code</h3>
+            <p id="referral-code">Loading...</p>
+            <button id="copy-code-btn">Copy Code</button>
+        </section>
+
+        <!-- USER INFO CARDS -->
+        <section class="user-cards">
+            <div class="card">
+                <h4>Phone</h4>
+                <p id="user-phone">Loading...</p>
+            </div>
+            <div class="card">
+                <h4>Age</h4>
+                <p id="user-age">Loading...</p>
+            </div>
+            <div class="card">
+                <h4>Sex</h4>
+                <p id="user-sex">Loading...</p>
+            </div>
+        </section>
+
+        <!-- LOGOUT -->
+        <button id="logout">Logout</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('/checkAuth', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        document.getElementById('user-name').textContent = data.user;
+
+                        fetch(`/referrals/${data.user}`, { credentials: 'include' })
+                            .then(res => res.json())
+                            .then(ref => {
+                                document.getElementById('referral-count').textContent = ref.count;
+                            });
+
+                        fetch('/getUserData', { credentials: 'include' })
+                            .then(res => res.json())
+                            .then(data => {
+                                document.getElementById('referral-code').textContent = data.referral_code;
+                                document.getElementById('user-phone').textContent = data.phone_number;
+                                document.getElementById('user-age').textContent = data.age;
+                                document.getElementById('user-sex').textContent = data.sex;
+                            });
+
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+
+            document.getElementById('logout').addEventListener('click', () => {
+                fetch('/logout', { method: 'POST', credentials: 'include' })
+                    .then(() => window.location.href = 'login.html');
+            });
+
+            document.getElementById('copy-code-btn').addEventListener('click', () => {
+                const code = document.getElementById('referral-code').textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("Referral code copied!");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

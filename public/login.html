@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Riseon – Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="logo-container">
+    <img src="images/riseon-logo.png" alt="Riseon Logo" class="logo" />
+    <h3 class="login-tagline">Built for those who rise.</h3>
+  </div>
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p class="signup">Don't have an account? <a href="signup.html">Sign up</a></p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("login-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        const response = await fetch("/login", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const result = await response.json();
+
+        if (result.message === "Login successful") {
+          alert(result.message);
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 300);
+        } else {
+          alert(result.error || "Login failed");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
