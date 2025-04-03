@@ -1,21 +1,15 @@
 const express = require('express');
-//const mysql = require('mysql2');
+const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 const app = express();
 const axios = require('axios'); // For CAPTCHA verification
-const port = process.env.PORT || 3000;
-require('dotenv').config();
-const { Pool } = require('pg');
 
-const db = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
+const port = process.env.PORT || 3000;
+
+require('dotenv').config();
 
 // Trust first proxy (for production or if hosting behind proxy)
 app.set('trust proxy', 1);
@@ -42,16 +36,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 // Database connection
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: {
-    rejectUnauthorized: true
-  }
+  const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+  });
+  db.connect(err => {
+    if (err) {
+        console.error('Database connection failed:', err);
+    } else {
+        console.log('✅ Connected to Yegara MySQL');
+    }
 });
 
+/*
 db.connect(err => {
     if (err) {
         console.error('Database connection failed:', err);
@@ -59,7 +58,7 @@ db.connect(err => {
     } else {
         console.log('Connected to MySQL');
     }
-});
+});*/
 
 // Get users
 app.get('/users', (req, res) => {
