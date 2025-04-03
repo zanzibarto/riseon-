@@ -1,15 +1,21 @@
 const express = require('express');
-const mysql = require('mysql2');
+//const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 const app = express();
 const axios = require('axios'); // For CAPTCHA verification
-
 const port = process.env.PORT || 3000;
-
 require('dotenv').config();
+const { Pool } = require('pg');
+
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 // Trust first proxy (for production or if hosting behind proxy)
 app.set('trust proxy', 1);
